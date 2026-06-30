@@ -1,5 +1,10 @@
 package com.carebridge.carebridge_backend.service.impl;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.carebridge.carebridge_backend.dto.request.EmployeeRequestDTO;
@@ -9,6 +14,7 @@ import com.carebridge.carebridge_backend.mapper.EmployeeMapper;
 import com.carebridge.carebridge_backend.repository.EmployeeRepository;
 import com.carebridge.carebridge_backend.sequence.SequenceGenerator;
 import com.carebridge.carebridge_backend.service.EmployeeService;
+import com.carebridge.carebridge_backend.specification.EmployeeSpecification;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -29,6 +35,38 @@ public class EmployeeServiceImpl implements EmployeeService {
 		employee.setEmployeeId(sequenceGenerator.generateId("EMP"));
 		employeeRepository.save(employee);
 		return employeeMapper.toResponseDTO(employee);
+	}
+
+	public EmployeeResponseDTO getEmployeeById(String id) {
+		Employee employee = employeeRepository.findById(id).orElseThrow(() -> new RuntimeException("Invalid Id"));
+		return employeeMapper.toResponseDTO(employee);
+	}
+
+	public List<EmployeeResponseDTO> getAllEmployees(boolean isActive) {
+		List<Employee> employees = employeeRepository.findAllByIsActive(isActive);
+		return employees.stream().map(employeeMapper::toResponseDTO).toList();
+	}
+
+	public EmployeeResponseDTO softDeleteEmployee(String id) {
+		Employee employee = employeeRepository.findById(id).orElseThrow(() -> new RuntimeException("Invalid Id"));
+		employee.setActive(false);
+		employeeRepository.save(employee);
+		return employeeMapper.toResponseDTO(employee);
+	}
+
+	public EmployeeResponseDTO updateEmployee(String id, EmployeeRequestDTO request) {
+		Employee employee = employeeRepository.findById(id).orElseThrow(() -> new RuntimeException("Invalid Id"));
+		employeeMapper.updateEntity(employee, request);
+		employeeRepository.save(employee);
+		return employeeMapper.toResponseDTO(employee);
+
+	}
+
+	public Page<EmployeeResponseDTO> searchEmployee(String search, boolean isActive, int page, int size) {
+		Specification<Employee> specification = Specification.where(EmployeeSpecification.search(search))
+				.and(EmployeeSpecification.isActive(isActive));
+		Page<Employee> employees = employeeRepository.findAll(specification, PageRequest.of(page, size));
+		return employees.map(employeeMapper :: toResponseDTO);
 	}
 
 }

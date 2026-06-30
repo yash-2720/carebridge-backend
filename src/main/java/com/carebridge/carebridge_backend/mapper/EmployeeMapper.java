@@ -8,20 +8,20 @@ import com.carebridge.carebridge_backend.entity.Employee;
 
 @Component
 public class EmployeeMapper {
-	
+
 	public Employee toEntity(EmployeeRequestDTO request) {
-		
+
 		Employee employee = new Employee();
-		
+
 		employee.setEmployeeNumber(request.getEmployeeNumber());
 		employee.setEmployeeName(request.getEmployeeName());
 		employee.setEmployeeEmail(request.getEmployeeEmail());
 		employee.setEmployeePhoneNumber(request.getEmployeePhoneNumber());
 		employee.setBasicSalary(request.getBasicSalary());
-		
+
 		return employee;
 	}
-	
+
 	public EmployeeResponseDTO toResponseDTO(Employee employee) {
 		EmployeeResponseDTO response = new EmployeeResponseDTO();
 		response.setEmployeeId(employee.getEmployeeId());
@@ -31,8 +31,16 @@ public class EmployeeMapper {
 		response.setEmployeePhoneNumber(employee.getEmployeePhoneNumber());
 		response.setBasicSalary(employee.getBasicSalary());
 		response.setActive(employee.isActive());
-		
+
 		return response;
+	}
+
+	public void updateEntity(Employee employee, EmployeeRequestDTO request) {
+
+		employee.setEmployeeName(request.getEmployeeName());
+		employee.setEmployeeEmail(request.getEmployeeEmail());
+		employee.setEmployeePhoneNumber(request.getEmployeePhoneNumber());
+
 	}
 
 }
