@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 
 import com.carebridge.carebridge_backend.dto.request.EmployeeRequestDTO;
+import com.carebridge.carebridge_backend.dto.request.UpdateEmployeeRequestDTO;
 import com.carebridge.carebridge_backend.dto.response.EmployeeResponseDTO;
 
 
@@ -18,7 +19,7 @@ public interface EmployeeService {
 	
 	public EmployeeResponseDTO softDeleteEmployee(String id);
 	
-	public EmployeeResponseDTO updateEmployee(String id, EmployeeRequestDTO request);
+	public EmployeeResponseDTO updateEmployee(String id, UpdateEmployeeRequestDTO request);
 	
 	public Page<EmployeeResponseDTO> searchEmployee(String search, boolean isActive, int page, int size);
 }

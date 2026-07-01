@@ -8,8 +8,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.carebridge.carebridge_backend.dto.request.EmployeeRequestDTO;
+import com.carebridge.carebridge_backend.dto.request.UpdateEmployeeRequestDTO;
 import com.carebridge.carebridge_backend.dto.response.EmployeeResponseDTO;
 import com.carebridge.carebridge_backend.entity.Employee;
+import com.carebridge.carebridge_backend.exception.ResourceNotFoundException;
 import com.carebridge.carebridge_backend.mapper.EmployeeMapper;
 import com.carebridge.carebridge_backend.repository.EmployeeRepository;
 import com.carebridge.carebridge_backend.sequence.SequenceGenerator;
@@ -38,7 +40,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	public EmployeeResponseDTO getEmployeeById(String id) {
-		Employee employee = employeeRepository.findById(id).orElseThrow(() -> new RuntimeException("Invalid Id"));
+		Employee employee = employeeRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " + id));
 		return employeeMapper.toResponseDTO(employee);
 	}
 
@@ -48,14 +51,16 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	public EmployeeResponseDTO softDeleteEmployee(String id) {
-		Employee employee = employeeRepository.findById(id).orElseThrow(() -> new RuntimeException("Invalid Id"));
+		Employee employee = employeeRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " + id));
 		employee.setActive(false);
 		employeeRepository.save(employee);
 		return employeeMapper.toResponseDTO(employee);
 	}
 
-	public EmployeeResponseDTO updateEmployee(String id, EmployeeRequestDTO request) {
-		Employee employee = employeeRepository.findById(id).orElseThrow(() -> new RuntimeException("Invalid Id"));
+	public EmployeeResponseDTO updateEmployee(String id, UpdateEmployeeRequestDTO request) {
+		Employee employee = employeeRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " + id));
 		employeeMapper.updateEntity(employee, request);
 		employeeRepository.save(employee);
 		return employeeMapper.toResponseDTO(employee);
@@ -66,7 +71,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		Specification<Employee> specification = Specification.where(EmployeeSpecification.search(search))
 				.and(EmployeeSpecification.isActive(isActive));
 		Page<Employee> employees = employeeRepository.findAll(specification, PageRequest.of(page, size));
-		return employees.map(employeeMapper :: toResponseDTO);
+		return employees.map(employeeMapper::toResponseDTO);
 	}
 
 }

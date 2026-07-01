@@ -3,6 +3,7 @@ package com.carebridge.carebridge_backend.mapper;
 import org.springframework.stereotype.Component;
 
 import com.carebridge.carebridge_backend.dto.request.EmployeeRequestDTO;
+import com.carebridge.carebridge_backend.dto.request.UpdateEmployeeRequestDTO;
 import com.carebridge.carebridge_backend.dto.response.EmployeeResponseDTO;
 import com.carebridge.carebridge_backend.entity.Employee;
 
@@ -35,7 +36,7 @@ public class EmployeeMapper {
 		return response;
 	}
 
-	public void updateEntity(Employee employee, EmployeeRequestDTO request) {
+	public void updateEntity(Employee employee, UpdateEmployeeRequestDTO request) {
 
 		employee.setEmployeeName(request.getEmployeeName());
 		employee.setEmployeeEmail(request.getEmployeeEmail());

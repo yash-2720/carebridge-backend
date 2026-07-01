@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.carebridge.carebridge_backend.dto.request.EmployeeRequestDTO;
+import com.carebridge.carebridge_backend.dto.request.UpdateEmployeeRequestDTO;
 import com.carebridge.carebridge_backend.dto.response.EmployeeResponseDTO;
 import com.carebridge.carebridge_backend.service.EmployeeService;
 
@@ -53,7 +54,7 @@ public class EmployeeController {
 	}
 	
 	@PutMapping("/updateEmployee/{id}")
-	public EmployeeResponseDTO updateEmployee( @PathVariable String id, @Valid @RequestBody EmployeeRequestDTO request) {
+	public EmployeeResponseDTO updateEmployee( @PathVariable String id, @Valid @RequestBody UpdateEmployeeRequestDTO request) {
 		return employeeService.updateEmployee(id, request);
 	}
 	
