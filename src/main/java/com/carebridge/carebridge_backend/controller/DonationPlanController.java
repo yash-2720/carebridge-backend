@@ -38,12 +38,14 @@ public class DonationPlanController {
 	@GetMapping("/search")
 	public Page<DonationPlanResponseDTO> search(@RequestParam(required = false) String search,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size,
-			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(defaultValue = "true") boolean isActive) {
+			@RequestParam(defaultValue = "asc") String sortOrder,
+			@RequestParam(defaultValue = "true") boolean isActive) {
 		return donationPlanService.searchDonationPlan(search, isActive, page, size, sortOrder);
 	}
-	
+
 	@GetMapping("/getDonationPlanByHospitalId/{id}")
-	public List<DonationPlanResponseDTO> getDonationPlansByHospital(@PathVariable String id,@RequestParam (defaultValue = "true") boolean isActive) {
+	public List<DonationPlanResponseDTO> getDonationPlansByHospital(@PathVariable String id,
+			@RequestParam(defaultValue = "true") boolean isActive) {
 		return donationPlanService.getDonationPlansByHospital(id, isActive);
 	}
 }

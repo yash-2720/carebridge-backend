@@ -45,6 +45,19 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body(createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred.", request));
 	}
+	
+	@ExceptionHandler(ResourceAlreadyExistsException.class)
+	public ResponseEntity<ErrorResponse> handleResourceAlreadyExistsException(
+	        ResourceAlreadyExistsException exception,
+	        HttpServletRequest request) {
+
+	    ErrorResponse errorResponse = createErrorResponse(
+	            HttpStatus.CONFLICT,
+	            exception.getMessage(),
+	            request);
+
+	    return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+	}
 
 	private ErrorResponse createErrorResponse(HttpStatus status, String message, HttpServletRequest request) {
 
