@@ -1,16 +1,20 @@
 package com.carebridge.carebridge_backend.exception;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import jakarta.servlet.http.HttpServletRequest;
+import tools.jackson.databind.exc.InvalidFormatException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -22,6 +26,7 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
 				.body(createErrorResponse(HttpStatus.NOT_FOUND, exception.getMessage(), request));
 	}
+	
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException exception,
@@ -58,6 +63,20 @@ public class GlobalExceptionHandler {
 
 	    return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
 	}
+	
+	
+	@ExceptionHandler(BusinessValidationException.class)
+	public ResponseEntity<ErrorResponse> handleBusinessValidationException(
+			BusinessValidationException exception,
+	        HttpServletRequest request) {
+
+	    ErrorResponse errorResponse = createErrorResponse(
+	            HttpStatus.BAD_REQUEST,
+	            exception.getMessage(),
+	            request);
+
+	    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
 
 	private ErrorResponse createErrorResponse(HttpStatus status, String message, HttpServletRequest request) {
 
@@ -70,6 +89,41 @@ public class GlobalExceptionHandler {
 		errorResponse.setPath(request.getRequestURI());
 
 		return errorResponse;
+	}
+	
+
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
+	        HttpMessageNotReadableException exception,
+	        HttpServletRequest request) {
+
+	    String message = "Invalid request payload.";
+
+	    if (exception.getCause() instanceof InvalidFormatException invalidFormatException) {
+
+	        Class<?> targetType = invalidFormatException.getTargetType();
+
+	        if (targetType.isEnum()) {
+
+	            String invalidValue = String.valueOf(invalidFormatException.getValue());
+
+	            String allowedValues = Arrays.stream(targetType.getEnumConstants())
+	                    .map(Object::toString)
+	                    .collect(Collectors.joining(", "));
+
+	            message = String.format(
+	                    "Invalid value '%s'. Allowed values are: %s.",
+	                    invalidValue,
+	                    allowedValues);
+	        }
+	    }
+
+	    ErrorResponse errorResponse = createErrorResponse(
+	            HttpStatus.BAD_REQUEST,
+	            message,
+	            request);
+
+	    return ResponseEntity.badRequest().body(errorResponse);
 	}
 
 }
