@@ -155,3 +155,74 @@ SET current_value = 10,
     modified_by = 'SYSTEM',
     modified_on = NOW()
 WHERE code = 'DOP';
+
+INSERT INTO id_sequence (
+    sequence_id,
+    entity_name,
+    code,
+    start_value,
+    current_value,
+    is_active,
+    created_by,
+    created_on,
+    modified_by,
+    modified_on
+)
+VALUES (
+    'IDS00000008',
+    'Payroll Run',
+    'PRL',
+    1,
+    2,
+    TRUE,
+    'SYSTEM',
+    NOW(),
+    'SYSTEM',
+    NOW()
+);
+
+
+INSERT INTO payroll_run_table (
+    payroll_run_id,
+    payroll_month,
+    payroll_year,
+    run_status,
+    processed_on,
+    processed_by,
+    remarks,
+    is_active,
+    created_by,
+    created_on,
+    modified_by,
+    modified_on
+)
+VALUES
+(
+    'PRL00000001',
+    7,
+    2026,
+    'COMPLETED',
+    '2026-07-06 18:43:07',
+    'SYSTEM',
+    'July 2026 payroll processed successfully.',
+    TRUE,
+    'SYSTEM',
+    '2026-07-06 18:43:07',
+    'SYSTEM',
+    '2026-07-06 18:43:07'
+),
+(
+    'PRL00000002',
+    8,
+    2026,
+    'COMPLETED',
+    '2026-08-06 18:43:07',
+    'SYSTEM',
+    'August 2026 payroll processed successfully.',
+    TRUE,
+    'SYSTEM',
+    '2026-08-06 18:43:07',
+    'SYSTEM',
+    '2026-08-06 18:43:07'
+);
+

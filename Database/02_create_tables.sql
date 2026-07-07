@@ -147,3 +147,44 @@ CREATE TABLE donation_transaction_table(
         FOREIGN KEY (donation_request_id)
         REFERENCES donation_request_table(donation_request_id)
 );
+
+
+-- new addition Adding payroll_run_table
+
+CREATE TABLE payroll_run_table(
+    payroll_run_id VARCHAR(20),
+
+    payroll_month TINYINT NOT NULL,
+    payroll_year SMALLINT NOT NULL,
+
+    run_status VARCHAR(30) NOT NULL,
+
+    processed_on TIMESTAMP NULL,
+    processed_by VARCHAR(50) NOT NULL,
+
+    remarks VARCHAR(255),
+
+    is_active BOOLEAN NOT NULL,
+    created_by VARCHAR(50) NOT NULL,
+    created_on TIMESTAMP NOT NULL,
+    modified_by VARCHAR(50),
+    modified_on TIMESTAMP,
+
+    CONSTRAINT pk_payroll_run_table
+        PRIMARY KEY (payroll_run_id),
+
+    CONSTRAINT uk_payroll_run_month_year
+        UNIQUE (payroll_month, payroll_year)
+); 
+
+
+-- Alter donation transaction table
+ALTER TABLE donation_transaction_table
+ADD COLUMN payroll_run_id VARCHAR(20) NOT NULL;
+
+-- populate payroll_run table before executing this query 
+-- adding foreign key constraint
+ALTER TABLE donation_transaction_table
+ADD CONSTRAINT fk_donation_transaction_payroll_run
+FOREIGN KEY (payroll_run_id)
+REFERENCES payroll_run_table(payroll_run_id); 
