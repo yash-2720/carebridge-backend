@@ -32,5 +32,8 @@ public class DonationTransactionResponseDTO {
 
 	private String remarks;
 
+	private String payrollRunId;
+	
 	private boolean isActive;
+
 }

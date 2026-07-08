@@ -31,6 +31,7 @@ public class DonationTransaction extends BaseEntity {
 //	transaction_status varchar(50) 
 //	processed_on timestamp 
 //	remarks varchar(100)
+//	payroll_run_id varchar(20)
 	
 	@Id
 	@Column(name = "donation_transaction_id", nullable = false)
@@ -56,5 +57,8 @@ public class DonationTransaction extends BaseEntity {
 	@Column(name = "processed_on", nullable = true)
 	private LocalDateTime processedOn;
 	
+	@ManyToOne
+	@JoinColumn(name = "payroll_run_id")
+	private PayrollRun payrollRun;
 
 }
