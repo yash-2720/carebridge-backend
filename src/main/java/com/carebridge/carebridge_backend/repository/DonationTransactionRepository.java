@@ -9,12 +9,13 @@ import org.springframework.stereotype.Repository;
 import com.carebridge.carebridge_backend.entity.DonationTransaction;
 
 @Repository
-public interface DonationTransactionRepository extends JpaRepository<DonationTransaction,String>, JpaSpecificationExecutor<DonationTransaction>{
+public interface DonationTransactionRepository
+		extends JpaRepository<DonationTransaction, String>, JpaSpecificationExecutor<DonationTransaction> {
 
 //	Page<DonationTransaction> findAllById(String donationRequestId, PageRequest pageRequest);
 
 	Page<DonationTransaction> findByDonationRequestDonationRequestId(String donationRequestId, Pageable pageable);
-	
-	
+
+	boolean existsByDonationRequestDonationRequestIdAndPayrollPeriod(String donationRequestId, String payrollPeriod);
 
 }

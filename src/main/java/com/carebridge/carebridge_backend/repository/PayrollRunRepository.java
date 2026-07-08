@@ -7,5 +7,5 @@ import com.carebridge.carebridge_backend.entity.PayrollRun;
 
 @Repository
 public interface PayrollRunRepository extends JpaRepository<PayrollRun, String> {
-
+	boolean existsByPayrollMonthAndPayrollYear(Integer payrollMonth, Integer payrollYear);
 }
