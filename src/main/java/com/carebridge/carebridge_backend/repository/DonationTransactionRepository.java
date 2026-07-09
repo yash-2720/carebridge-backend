@@ -15,6 +15,8 @@ public interface DonationTransactionRepository
 //	Page<DonationTransaction> findAllById(String donationRequestId, PageRequest pageRequest);
 
 	Page<DonationTransaction> findByDonationRequestDonationRequestId(String donationRequestId, Pageable pageable);
+	
+	Page<DonationTransaction> findByPayrollRunPayrollRunId(String payrollRunId, Pageable pageable);
 
 	boolean existsByDonationRequestDonationRequestIdAndPayrollPeriod(String donationRequestId, String payrollPeriod);
 

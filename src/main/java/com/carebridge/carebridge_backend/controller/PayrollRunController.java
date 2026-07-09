@@ -1,8 +1,12 @@
 package com.carebridge.carebridge_backend.controller;
 
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.carebridge.carebridge_backend.dto.request.PayrollRunRequestDTO;
@@ -21,8 +25,23 @@ public class PayrollRunController {
 		this.payrollRunService = payrollRunService;
 	}
 	
-	@PostMapping
+	@PostMapping("/executePayroll")
 	public PayrollRunResponseDTO runPayroll(@RequestBody @Valid PayrollRunRequestDTO request) {
 		return payrollRunService.runPayroll(request);
 	}
+	
+	@GetMapping("/getAllPayroll")
+	Page<PayrollRunResponseDTO> getAllPayrollRecords(@RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "5") int size){
+		return payrollRunService.getAllPayrollRecords(page, size);
+	}
+
+	@GetMapping("/getPayrollById/{id}")
+    public PayrollRunResponseDTO getPayrollById(@PathVariable String id) {
+    	return payrollRunService.getPayrollById(id);
+    }
+    
+	@GetMapping("/search")
+    public Page<PayrollRunResponseDTO> SearchPayrollRun(@RequestParam(required = false) String search,@RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "5") int size){
+    	return payrollRunService.searchPayrollRun(search, page, size);
+    }
 }

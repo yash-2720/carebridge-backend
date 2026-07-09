@@ -35,5 +35,7 @@ public class PayrollRunResponseDTO {
 	private BigDecimal totalDonationAmount;
 
 	private LocalDateTime processedOn;
+	
+	private String remarks;
 
 }

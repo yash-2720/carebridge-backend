@@ -14,4 +14,6 @@ public interface DonationTransactionService {
 	
 	public Page<DonationTransactionResponseDTO> getTransactionsByDonationRequest(String donationRequestId, int page, int size);
 	
+	public Page<DonationTransactionResponseDTO> getTransactionsByPayrollRunId(String payrollRunId, int page, int size);
+	
 }

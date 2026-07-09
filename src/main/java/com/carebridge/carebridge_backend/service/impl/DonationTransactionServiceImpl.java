@@ -6,14 +6,14 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.carebridge.carebridge_backend.dto.response.DonationTransactionResponseDTO;
-import com.carebridge.carebridge_backend.entity.DonationPlan;
 import com.carebridge.carebridge_backend.entity.DonationRequest;
 import com.carebridge.carebridge_backend.entity.DonationTransaction;
+import com.carebridge.carebridge_backend.entity.PayrollRun;
 import com.carebridge.carebridge_backend.exception.ResourceNotFoundException;
-import com.carebridge.carebridge_backend.mapper.DonationRequestMapper;
 import com.carebridge.carebridge_backend.mapper.DonationTransactionMapper;
 import com.carebridge.carebridge_backend.repository.DonationRequestRepository;
 import com.carebridge.carebridge_backend.repository.DonationTransactionRepository;
+import com.carebridge.carebridge_backend.repository.PayrollRunRepository;
 import com.carebridge.carebridge_backend.sequence.SequenceGenerator;
 import com.carebridge.carebridge_backend.service.DonationTransactionService;
 import com.carebridge.carebridge_backend.specification.DonationTransactionSpecification;
@@ -26,15 +26,17 @@ public class DonationTransactionServiceImpl implements DonationTransactionServic
 	private DonationTransactionRepository donationTransactionRepository;
 
 	private DonationRequestRepository donationRequestRepository;
+	private PayrollRunRepository payrollRunRepository;
 
 	public DonationTransactionServiceImpl(SequenceGenerator sequenceGenerator,
 			DonationTransactionMapper donationTransactionMapper,
 			DonationTransactionRepository donationTransactionRepository,
-			DonationRequestRepository donationRequestRepository) {
+			DonationRequestRepository donationRequestRepository, PayrollRunRepository payrollRunRepository) {
 		this.sequenceGenerator = sequenceGenerator;
 		this.donationTransactionMapper = donationTransactionMapper;
 		this.donationTransactionRepository = donationTransactionRepository;
 		this.donationRequestRepository = donationRequestRepository;
+		this.payrollRunRepository = payrollRunRepository;
 	}
 
 	@Override
@@ -57,7 +59,8 @@ public class DonationTransactionServiceImpl implements DonationTransactionServic
 //		} else {
 //			sort = Sort.by(Sort.Direction.ASC, "username");
 //		}
-		Page<DonationTransaction> donationTransactions = donationTransactionRepository.findAll(PageRequest.of(page, size));
+		Page<DonationTransaction> donationTransactions = donationTransactionRepository
+				.findAll(PageRequest.of(page, size));
 		return donationTransactions.map(donationTransactionMapper::toResponseDTO);
 
 	}
@@ -75,7 +78,6 @@ public class DonationTransactionServiceImpl implements DonationTransactionServic
 		return donationTransactions.map(donationTransactionMapper::toResponseDTO);
 
 	}
-	
 
 	@Override
 	public Page<DonationTransactionResponseDTO> getTransactionsByDonationRequest(String donationRequestId, int page,
@@ -87,6 +89,17 @@ public class DonationTransactionServiceImpl implements DonationTransactionServic
 				.findByDonationRequestDonationRequestId(donationRequestId, PageRequest.of(page, size));
 //		return donationTransactions.map(donationTransactionMapper:: toResponseDTO);
 		return donationTransaction.map(donationTransactionMapper::toResponseDTO);
+	}
+
+	@Override
+	public Page<DonationTransactionResponseDTO> getTransactionsByPayrollRunId(String payrollRunId, int page, int size) {
+
+		PayrollRun payrollRun = payrollRunRepository.findById(payrollRunId)
+				.orElseThrow(() -> new ResourceNotFoundException("Payroll not found for Id : " + payrollRunId));
+		Page<DonationTransaction> donationTransaction = donationTransactionRepository
+				.findByPayrollRunPayrollRunId(payrollRunId, PageRequest.of(page, size));
+		return donationTransaction.map(donationTransactionMapper::toResponseDTO);
+
 	}
 
 }

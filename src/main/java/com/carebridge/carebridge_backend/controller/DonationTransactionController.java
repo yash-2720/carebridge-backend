@@ -44,5 +44,12 @@ public class DonationTransactionController {
 		return donationTransactionService.SearchDonationTransactions(search, page, size, isActive);
 		
 	}
+	
+	@GetMapping("/getTransactionByPayrollId/{id}")
+	public Page<DonationTransactionResponseDTO> getTransactionsByPayrollRunId(@PathVariable String id,@RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "5") int size){
+		
+		return donationTransactionService.getTransactionsByPayrollRunId(id, page, size);
+		
+	}
 
 }

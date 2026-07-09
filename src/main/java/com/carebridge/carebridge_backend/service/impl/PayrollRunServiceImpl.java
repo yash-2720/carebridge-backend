@@ -5,9 +5,13 @@ import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.carebridge.carebridge_backend.dto.request.PayrollRunRequestDTO;
+import com.carebridge.carebridge_backend.dto.response.DonationTransactionResponseDTO;
 import com.carebridge.carebridge_backend.dto.response.PayrollRunResponseDTO;
 import com.carebridge.carebridge_backend.entity.DonationRequest;
 import com.carebridge.carebridge_backend.entity.DonationTransaction;
@@ -17,11 +21,14 @@ import com.carebridge.carebridge_backend.enums.DonationType;
 import com.carebridge.carebridge_backend.enums.PayrollRunStatus;
 import com.carebridge.carebridge_backend.enums.TransactionStatus;
 import com.carebridge.carebridge_backend.exception.BusinessValidationException;
+import com.carebridge.carebridge_backend.exception.ResourceNotFoundException;
 import com.carebridge.carebridge_backend.repository.DonationRequestRepository;
 import com.carebridge.carebridge_backend.repository.DonationTransactionRepository;
 import com.carebridge.carebridge_backend.repository.PayrollRunRepository;
 import com.carebridge.carebridge_backend.sequence.SequenceGenerator;
 import com.carebridge.carebridge_backend.service.PayrollRunService;
+import com.carebridge.carebridge_backend.specification.DonationTransactionSpecification;
+import com.carebridge.carebridge_backend.specification.PayrollRunSpecification;
 
 import jakarta.transaction.Transactional;
 
@@ -42,6 +49,32 @@ public class PayrollRunServiceImpl implements PayrollRunService {
 		this.donationTransactionRepository = donationTransactionRepository;
 	}
 
+	@Override
+	public Page<PayrollRunResponseDTO> getAllPayrollRecords(int page, int size) {
+		Page<PayrollRun> payrolls = payrollRunRepository.findAll(PageRequest.of(page, size));
+		return payrolls.map(this :: toResponseDTO);
+	}
+
+	@Override
+	public PayrollRunResponseDTO getPayrollById(String payrollRunId) {
+		PayrollRun payrollRun = payrollRunRepository.findById(payrollRunId)
+				.orElseThrow(() -> new ResourceNotFoundException("Payroll not found for Id : " + payrollRunId));
+
+//		PayrollRunResponseDTO response = new PayrollRunResponseDTO();
+
+		return toResponseDTO(payrollRun);
+	}
+
+	@Override
+	public Page<PayrollRunResponseDTO> searchPayrollRun(String search, int page, int size) {
+
+		Specification<PayrollRun> specification = Specification.where(PayrollRunSpecification.search(search));
+
+		Page<PayrollRun> payrolls = payrollRunRepository.findAll(specification,PageRequest.of(page, size));
+		return payrolls.map(this :: toResponseDTO);
+
+	}
+	
 	@Transactional
 	public PayrollRunResponseDTO runPayroll(PayrollRunRequestDTO request) {
 
@@ -143,6 +176,8 @@ public class PayrollRunServiceImpl implements PayrollRunService {
 		payrollRun.setRunStatus(PayrollRunStatus.COMPLETED);
 		payrollRun.setProcessedOn(LocalDateTime.now());
 		payrollRun = payrollRunRepository.save(payrollRun);
+		payrollRun.setRemarks(
+				"Payroll processed successfully. Processed: " + processedRequests + ", Skipped: " + skippedRequests);
 
 		PayrollRunResponseDTO response = new PayrollRunResponseDTO();
 		response.setPayrollRunId(payrollRun.getPayrollRunId());
@@ -153,6 +188,8 @@ public class PayrollRunServiceImpl implements PayrollRunService {
 		response.setSkippedRequests(skippedRequests);
 		response.setTotalDonationAmount(totalDonationAmount);
 		response.setProcessedOn(payrollRun.getProcessedOn());
+		response.setRemarks(
+				"Payroll processed successfully. Processed: " + processedRequests + ", Skipped: " + skippedRequests);
 
 		System.out.println("Skipped Requests :" + skippedRequests);
 		System.out.println("Processed Requests :" + processedRequests);
@@ -160,5 +197,21 @@ public class PayrollRunServiceImpl implements PayrollRunService {
 
 		return response;
 	}
+	
+	
+	private PayrollRunResponseDTO toResponseDTO(PayrollRun payrollRun) {
+
+	    PayrollRunResponseDTO response = new PayrollRunResponseDTO();
+
+	    response.setPayrollRunId(payrollRun.getPayrollRunId());
+	    response.setPayrollMonth(payrollRun.getPayrollMonth());
+	    response.setPayrollYear(payrollRun.getPayrollYear());
+	    response.setRunStatus(payrollRun.getRunStatus());
+	    response.setProcessedOn(payrollRun.getProcessedOn());
+	    response.setRemarks(payrollRun.getRemarks());
+
+	    return response;
+	}
+
 
 }
