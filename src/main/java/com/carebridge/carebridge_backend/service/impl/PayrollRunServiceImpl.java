@@ -116,9 +116,11 @@ public class PayrollRunServiceImpl implements PayrollRunService {
 			processedRequests++;
 			totalDonationAmount = totalDonationAmount.add(donationRequest.getDonationAmount());
 
+			boolean updateStatus = false;
+
 			if (donationRequest.getDonationType() == DonationType.ONE_TIME) {
 				donationRequest.setDonationStatus(DonationStatus.PROCESSED);
-				donationRequestRepository.save(donationRequest);
+				updateStatus = true;
 			}
 
 			if (donationRequest.getDonationType() == DonationType.RECURRING
@@ -129,9 +131,12 @@ public class PayrollRunServiceImpl implements PayrollRunService {
 
 					donationRequest.setDonationStatus(DonationStatus.PROCESSED);
 
-					donationRequestRepository.save(donationRequest);
+					updateStatus = true;
 				}
 
+			}
+			if (updateStatus) {
+				donationRequestRepository.save(donationRequest);
 			}
 
 		}
