@@ -121,6 +121,19 @@ public class PayrollRunServiceImpl implements PayrollRunService {
 				donationRequestRepository.save(donationRequest);
 			}
 
+			if (donationRequest.getDonationType() == DonationType.RECURRING
+					&& donationRequest.getDonationEndDate() != null) {
+				YearMonth donationEndPeriod = YearMonth.from(donationRequest.getDonationEndDate());
+
+				if (payrollPeriod.equals(donationEndPeriod)) {
+
+					donationRequest.setDonationStatus(DonationStatus.PROCESSED);
+
+					donationRequestRepository.save(donationRequest);
+				}
+
+			}
+
 		}
 		payrollRun.setRunStatus(PayrollRunStatus.COMPLETED);
 		payrollRun.setProcessedOn(LocalDateTime.now());
@@ -135,6 +148,10 @@ public class PayrollRunServiceImpl implements PayrollRunService {
 		response.setSkippedRequests(skippedRequests);
 		response.setTotalDonationAmount(totalDonationAmount);
 		response.setProcessedOn(payrollRun.getProcessedOn());
+
+		System.out.println("Skipped Requests :" + skippedRequests);
+		System.out.println("Processed Requests :" + processedRequests);
+		System.out.println("Total Donation Amount : " + totalDonationAmount);
 
 		return response;
 	}
