@@ -12,5 +12,13 @@ import com.carebridge.carebridge_backend.entity.Employee;
 public interface EmployeeRepository extends JpaRepository<Employee,String>, JpaSpecificationExecutor<Employee> {
 	
 	List<Employee> findAllByIsActive(boolean isActive);
+	
+//	Employee findByEmployeeNumber(String employeeNumber);
+	
+	boolean existsByEmployeeNumber(String employeeNumber);
+	
+	boolean existsByEmployeeEmail(String employeeEmail);
+	
+	boolean existsByEmployeePhoneNumber(String employeePhoneNumber);
 
 }

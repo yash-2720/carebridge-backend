@@ -29,9 +29,10 @@ public class DonationPlanController {
 
 	@GetMapping("/getAllDonatonPlan")
 	public Page<DonationPlanResponseDTO> getAllDonatinPlans(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "5") int size, @RequestParam(defaultValue = "true") boolean isActive) {
+			@RequestParam(defaultValue = "5") int size, @RequestParam(defaultValue = "true") boolean isActive,
+			@RequestParam(defaultValue = "asc") String sortOrder) {
 
-		return donationPlanService.getAllDonationPlan(page, size, isActive);
+		return donationPlanService.getAllDonationPlan(page, size, isActive, sortOrder);
 
 	}
 

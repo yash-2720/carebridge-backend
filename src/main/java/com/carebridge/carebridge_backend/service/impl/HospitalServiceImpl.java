@@ -21,7 +21,6 @@ public class HospitalServiceImpl implements HospitalService {
 
 	private HospitalRepository hospitalRepository;
 	private HospitalMapper hospitalMapper;
-//	private HospitalResponseDTO hospitalResponseDTO;
 
 	public HospitalServiceImpl(HospitalRepository hospitalRepository, HospitalMapper hospitalMapper) {
 		this.hospitalRepository = hospitalRepository;
@@ -38,7 +37,7 @@ public class HospitalServiceImpl implements HospitalService {
 			sort = Sort.by(Sort.Direction.ASC, "hospitalName");
 		}
 		Page<Hospital> hospitals = hospitalRepository.findAllByIsActive(isActive, PageRequest.of(page, size, sort));
-//		return hospitals.stream().map(hospitalMapper :: toResponseDTO ).toList();
+
 		return hospitals.map(hospitalMapper::toResponseDTO);
 	}
 

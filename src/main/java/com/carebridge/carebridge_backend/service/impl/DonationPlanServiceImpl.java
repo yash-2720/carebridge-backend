@@ -29,12 +29,18 @@ public class DonationPlanServiceImpl implements DonationPlanService {
 
 	}
 
-	public Page<DonationPlanResponseDTO> getAllDonationPlan(int page, int size, boolean isActive) {
-		// TODO Auto-generated method stub
+	public Page<DonationPlanResponseDTO> getAllDonationPlan(int page, int size, boolean isActive,String sortOrder) {
 
 		Specification<DonationPlan> specification = Specification.where(DonationPlanSpecification.isActive(isActive));
-		Page<DonationPlan> donationPlans = donationPlanRepository.findAll(specification, PageRequest.of(page, size));
+		Sort sort;
+		if ("desc".equalsIgnoreCase(sortOrder)) {
+			sort = Sort.by(Sort.Direction.DESC, "donationName");
+		} else {
+			sort = Sort.by(Sort.Direction.ASC, "donationName");
+		}
+		Page<DonationPlan> donationPlans = donationPlanRepository.findAll(specification, PageRequest.of(page, size, sort));
 		return donationPlans.map(donationPlanMapper::toResponseDTO);
+		
 	}
 
 	public DonationPlanResponseDTO getDonationPlanById(String id) {

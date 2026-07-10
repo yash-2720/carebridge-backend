@@ -15,7 +15,7 @@ public interface EmployeeService {
 	
 	public EmployeeResponseDTO getEmployeeById(String id);
 	
-	public List<EmployeeResponseDTO> getAllEmployees(boolean isActive);
+	public Page<EmployeeResponseDTO> getAllEmployees(boolean isActive, int page, int size, String sortOrder);
 	
 	public EmployeeResponseDTO softDeleteEmployee(String id);
 	

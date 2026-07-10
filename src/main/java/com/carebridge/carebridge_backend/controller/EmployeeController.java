@@ -43,8 +43,9 @@ public class EmployeeController {
 	}
 
 	@GetMapping("/getAllEmployees")
-	public List<EmployeeResponseDTO> getAllEmployees(@RequestParam(defaultValue = "true") boolean isActive) {
-		return employeeService.getAllEmployees(isActive);
+	public Page<EmployeeResponseDTO> getAllEmployees(@RequestParam(defaultValue = "true") boolean isActive,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size,@RequestParam(defaultValue ="asc") String sortOrder) {
+		return employeeService.getAllEmployees(isActive, page, size, sortOrder);
 	}
 
 	@DeleteMapping("/deleteEmployee/{id}")
@@ -52,20 +53,19 @@ public class EmployeeController {
 		return employeeService.softDeleteEmployee(id);
 
 	}
-	
+
 	@PutMapping("/updateEmployee/{id}")
-	public EmployeeResponseDTO updateEmployee( @PathVariable String id, @Valid @RequestBody UpdateEmployeeRequestDTO request) {
+	public EmployeeResponseDTO updateEmployee(@PathVariable String id,
+			@Valid @RequestBody UpdateEmployeeRequestDTO request) {
 		return employeeService.updateEmployee(id, request);
 	}
-	
-	@GetMapping("/search")
-	public Page<EmployeeResponseDTO> getEmployees(
-	        @RequestParam(required = false) String search,
-	        @RequestParam(defaultValue = "true") boolean isActive,
-	        @RequestParam(defaultValue = "0") int page,
-	        @RequestParam(defaultValue = "5") int size) {
 
-	    return employeeService.searchEmployee(search, isActive, page, size);
+	@GetMapping("/search")
+	public Page<EmployeeResponseDTO> getEmployees(@RequestParam(required = false) String search,
+			@RequestParam(defaultValue = "true") boolean isActive, @RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "5") int size) {
+
+		return employeeService.searchEmployee(search, isActive, page, size);
 	}
 
 }

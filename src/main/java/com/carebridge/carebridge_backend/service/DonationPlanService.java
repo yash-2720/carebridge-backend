@@ -8,7 +8,7 @@ import com.carebridge.carebridge_backend.dto.response.DonationPlanResponseDTO;
 
 public interface DonationPlanService {
 
-	public Page<DonationPlanResponseDTO> getAllDonationPlan(int page, int size, boolean isActive);
+	public Page<DonationPlanResponseDTO> getAllDonationPlan(int page, int size, boolean isActive, String sortOrder);
 
 	public DonationPlanResponseDTO getDonationPlanById(String id);
 
