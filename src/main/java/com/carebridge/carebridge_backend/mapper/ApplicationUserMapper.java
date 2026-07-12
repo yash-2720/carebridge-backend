@@ -1,5 +1,7 @@
 package com.carebridge.carebridge_backend.mapper;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.carebridge.carebridge_backend.dto.request.ApplicationUserRequestDTO;
@@ -9,10 +11,13 @@ import com.carebridge.carebridge_backend.entity.ApplicationUser;
 @Component
 public class ApplicationUserMapper {
 	
+//	@Autowired
+//	private PasswordEncoder passwordEncoder;
+//	
 	public ApplicationUser toEntity(ApplicationUserRequestDTO request) {
 		ApplicationUser applicationUser = new ApplicationUser();
 		applicationUser.setUsername(request.getUsername());
-		applicationUser.setPassword(request.getPassword());
+//		applicationUser.setPassword(passwordEncoder.encode(request.getPassword()));
 		return applicationUser;
 	}
 	

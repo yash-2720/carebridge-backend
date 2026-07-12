@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.carebridge.carebridge_backend.dto.request.ApplicationUserRequestDTO;
@@ -25,7 +26,9 @@ import com.carebridge.carebridge_backend.specification.ApplicationUserSpecificat
 @Service
 public class ApplicationUserServiceImpl implements ApplicationUserService {
 
-	private final RoleRepository roleRepository;
+	private PasswordEncoder passwordEncoder;
+	
+	private  RoleRepository roleRepository;
 
 	private ApplicationUserRepository applicationUserRepository;
 	private SequenceGenerator sequenceGenerator;
@@ -34,13 +37,14 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
 
 	public ApplicationUserServiceImpl(ApplicationUserRepository applicationUserRepository,
 			SequenceGenerator sequenceGenerator, ApplicationUserMapper applicationUserMapper,
-			EmployeeRepository employeeRepository, RoleRepository roleRepository) {
+			EmployeeRepository employeeRepository, RoleRepository roleRepository,PasswordEncoder passwordEncoder) {
 
 		this.applicationUserMapper = applicationUserMapper;
 		this.sequenceGenerator = sequenceGenerator;
 		this.applicationUserRepository = applicationUserRepository;
 		this.employeeRepository = employeeRepository;
 		this.roleRepository = roleRepository;
+		this.passwordEncoder = passwordEncoder;
 
 	}
 
@@ -71,6 +75,7 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
 
 		Role role = roleRepository.findById(request.getRoleId())
 				.orElseThrow(() -> new ResourceNotFoundException("Role Not found for Id :" + request.getRoleId()));
+		appUser.setPassword(passwordEncoder.encode(request.getPassword()));
 		appUser.setEmployee(employee);
 		appUser.setRole(role);
 		appUser.setUserId(sequenceGenerator.generateId("USR"));
