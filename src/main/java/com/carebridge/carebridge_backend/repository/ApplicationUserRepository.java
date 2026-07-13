@@ -1,11 +1,12 @@
 package com.carebridge.carebridge_backend.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import com.carebridge.carebridge_backend.entity.ApplicationUser;
-import com.carebridge.carebridge_backend.entity.DonationPlan;
 
 @Repository
 public interface ApplicationUserRepository
@@ -13,5 +14,7 @@ public interface ApplicationUserRepository
 	boolean existsByUsername(String username);
 
 	boolean existsByEmployeeEmployeeId(String employeeId);
+	
+	Optional<ApplicationUser> findByUsername(String username);
 
 }
