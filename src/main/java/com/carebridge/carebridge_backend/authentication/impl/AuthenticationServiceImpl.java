@@ -9,36 +9,33 @@ import org.springframework.stereotype.Service;
 import com.carebridge.carebridge_backend.authentication.AuthenticationService;
 import com.carebridge.carebridge_backend.authentication.dto.LoginRequestDTO;
 import com.carebridge.carebridge_backend.authentication.dto.LoginResponseDTO;
-import com.carebridge.carebridge_backend.entity.ApplicationUser;
 import com.carebridge.carebridge_backend.repository.ApplicationUserRepository;
+import com.carebridge.carebridge_backend.security.CustomUserDetails;
+import com.carebridge.carebridge_backend.security.jwt.JwtService;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
 	private final AuthenticationManager authenticationManager;
-	private final PasswordEncoder passwordEncoder;
-	private final ApplicationUserRepository applicationUserRepository;
+	private final JwtService jwtService;
 
-	public AuthenticationServiceImpl(AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder,
-			ApplicationUserRepository applicationUserRepository) {
+	public AuthenticationServiceImpl(AuthenticationManager authenticationManager, JwtService jwtService) {
 		this.authenticationManager = authenticationManager;
-		this.passwordEncoder = passwordEncoder;
-		this.applicationUserRepository = applicationUserRepository;
+		this.jwtService = jwtService;
 	}
 
 	@Override
 	public LoginResponseDTO login(LoginRequestDTO request) {
-//		ApplicationUser user = applicationUserRepository.findByUsername(request.getUsername()).orElseThrow();
-//
-//		System.out.println(passwordEncoder.matches(request.getPassword(), user.getPassword()));
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
-		System.out.println(authentication.getName());
-		System.out.println(authentication.isAuthenticated());
-		System.out.println(authentication.getAuthorities());
-		System.out.println(authentication.getPrincipal());
+		String token = jwtService.generateToken(user);
 
-		return null;
+		LoginResponseDTO response = new LoginResponseDTO();
+		response.setToken(token);
+
+		return response;
+
 	}
 }
