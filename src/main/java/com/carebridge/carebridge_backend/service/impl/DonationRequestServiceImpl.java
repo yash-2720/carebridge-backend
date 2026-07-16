@@ -5,20 +5,24 @@ import java.math.BigDecimal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.carebridge.carebridge_backend.dto.request.DonationRequestDTO;
 import com.carebridge.carebridge_backend.dto.response.DonationRequestResponseDTO;
+import com.carebridge.carebridge_backend.entity.ApplicationUser;
 import com.carebridge.carebridge_backend.entity.DonationPlan;
 import com.carebridge.carebridge_backend.entity.DonationRequest;
 import com.carebridge.carebridge_backend.entity.Employee;
 import com.carebridge.carebridge_backend.enums.DonationStatus;
+import com.carebridge.carebridge_backend.enums.RoleType;
 import com.carebridge.carebridge_backend.exception.BusinessValidationException;
 import com.carebridge.carebridge_backend.exception.ResourceNotFoundException;
 import com.carebridge.carebridge_backend.mapper.DonationRequestMapper;
 import com.carebridge.carebridge_backend.repository.DonationPlanRepository;
 import com.carebridge.carebridge_backend.repository.DonationRequestRepository;
 import com.carebridge.carebridge_backend.repository.EmployeeRepository;
+import com.carebridge.carebridge_backend.security.LoggedInUserService;
 import com.carebridge.carebridge_backend.sequence.SequenceGenerator;
 import com.carebridge.carebridge_backend.service.DonationRequestService;
 import com.carebridge.carebridge_backend.specification.DonationRequestSpecification;
@@ -31,16 +35,19 @@ public class DonationRequestServiceImpl implements DonationRequestService {
 	private EmployeeRepository employeeRepository;
 	private DonationPlanRepository donationPlanRepository;
 	private DonationRequestMapper donationRequestMapper;
+	private LoggedInUserService loggedInUserService;
 
 	public DonationRequestServiceImpl(DonationRequestRepository donationRequestRepository,
 			SequenceGenerator sequenceGenerator, EmployeeRepository employeeRepository,
-			DonationPlanRepository donationPlanRepository, DonationRequestMapper donationRequestMapper) {
+			DonationPlanRepository donationPlanRepository, DonationRequestMapper donationRequestMapper,
+			LoggedInUserService loggedInUserService) {
 
 		this.donationRequestRepository = donationRequestRepository;
 		this.sequenceGenerator = sequenceGenerator;
 		this.employeeRepository = employeeRepository;
 		this.donationPlanRepository = donationPlanRepository;
 		this.donationRequestMapper = donationRequestMapper;
+		this.loggedInUserService = loggedInUserService;
 	}
 
 	public DonationRequestResponseDTO addDonationRequest(DonationRequestDTO request) {
@@ -92,27 +99,53 @@ public class DonationRequestServiceImpl implements DonationRequestService {
 
 	public Page<DonationRequestResponseDTO> searchDonationRequests(String search, boolean isActive, int page,
 			int size) {
-		
+
 		Specification<DonationRequest> specification = Specification.where(DonationRequestSpecification.search(search))
 				.and(DonationRequestSpecification.isActive(isActive));
-		
+
 		Page<DonationRequest> donationRequests = donationRequestRepository.findAll(specification,
 				PageRequest.of(page, size));
 		return donationRequests.map(donationRequestMapper::toResponseDTO);
 	}
 
-	
 	public DonationRequestResponseDTO cancelDonationRequest(String donationRequestId) {
-		
+
 		DonationRequest donationRequest = donationRequestRepository.findById(donationRequestId).orElseThrow(
 				() -> new ResourceNotFoundException("Donation Request not found for Id : " + donationRequestId));
-		if(donationRequest.getDonationStatus() == DonationStatus.CANCELLED) {
+		if (donationRequest.getDonationStatus() == DonationStatus.CANCELLED) {
 			throw new BusinessValidationException("Donation Request Already Cancelled");
 		}
+		ApplicationUser user = loggedInUserService.getCurrentApplicationUser();
+
+		if (!loggedInUserService.isAdmin()) {
+			if (!donationRequest.getEmployee().getEmployeeId()
+					.equals(loggedInUserService.getCurrentEmployee().getEmployeeId())) {
+				throw new AccessDeniedException("Access Denied");
+			}
+
+		}
+
 		donationRequest.setDonationStatus(DonationStatus.CANCELLED);
 		donationRequest.setActive(false);
 		donationRequestRepository.save(donationRequest);
 		return donationRequestMapper.toResponseDTO(donationRequest);
+
+//		if (user.getRole().getRoleName().equals(RoleType.ADMIN.name())) {
+//			donationRequest.setDonationStatus(DonationStatus.CANCELLED);
+//			donationRequest.setActive(false);
+//			donationRequestRepository.save(donationRequest);
+//			return donationRequestMapper.toResponseDTO(donationRequest);
+//		}
+//		if (!donationRequest.getEmployee().getEmployeeId()
+//				.equals(loggedInUserService.getCurrentEmployee().getEmployeeId())) {
+//			throw new BusinessValidationException("Access Denied");
+//		} else {
+//			donationRequest.setDonationStatus(DonationStatus.CANCELLED);
+//			donationRequest.setActive(false);
+//			donationRequestRepository.save(donationRequest);
+//			return donationRequestMapper.toResponseDTO(donationRequest);
+//		}
+
 	}
 
 }

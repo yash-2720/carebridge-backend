@@ -1,8 +1,7 @@
 package com.carebridge.carebridge_backend.controller;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +29,7 @@ public class EmployeeController {
 		this.employeeService = employeeService;
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/addEmployee")
 	public EmployeeResponseDTO addEmployee(@Valid @RequestBody EmployeeRequestDTO request) {
 
@@ -48,12 +48,14 @@ public class EmployeeController {
 		return employeeService.getAllEmployees(isActive, page, size, sortOrder);
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/deleteEmployee/{id}")
 	public EmployeeResponseDTO softDeleteEmployee(@PathVariable String id) {
 		return employeeService.softDeleteEmployee(id);
 
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/updateEmployee/{id}")
 	public EmployeeResponseDTO updateEmployee(@PathVariable String id,
 			@Valid @RequestBody UpdateEmployeeRequestDTO request) {

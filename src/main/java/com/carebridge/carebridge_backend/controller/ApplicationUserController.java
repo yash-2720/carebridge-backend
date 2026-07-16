@@ -1,6 +1,7 @@
 package com.carebridge.carebridge_backend.controller;
 
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,16 +29,19 @@ public class ApplicationUserController {
 		this.applicationUserService = applicationUserService;
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/addNewUser")
 	public ApplicationUserResponseDTO addNewAppUser(@RequestBody @Valid ApplicationUserRequestDTO request) {
 		return applicationUserService.addNewAppUser(request);
 	}
-
+	
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/getUserById/{id}")
 	public ApplicationUserResponseDTO getAppUserById(@PathVariable String id) {
 		return applicationUserService.getAppUserById(id);
 	}
-
+	
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/search")
 	public Page<ApplicationUserResponseDTO> searchApplicationUser(@RequestParam(required = false) String search,
 			@RequestParam(defaultValue = "true") boolean isActive, @RequestParam(defaultValue = "0") int page,
@@ -45,11 +49,13 @@ public class ApplicationUserController {
 		return applicationUserService.searchApplicationUser(search, isActive, page, size, sortOrder);
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/deleteApplicationUser/{id}")
 	public ApplicationUserResponseDTO softDeleteUser(@PathVariable String id) {
 		return applicationUserService.softDeleteUser(id);
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/getAllAplicationUsers")
 	public Page<ApplicationUserResponseDTO> getAllApplicationUsers(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "5") int size, @RequestParam(defaultValue = "asc") String sortOrder,
@@ -57,6 +63,7 @@ public class ApplicationUserController {
 		return applicationUserService.getAllApplicationUsers(page, size, sortOrder, isActive);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/updateApplicationUser/{id}")
 	public ApplicationUserResponseDTO updateUser(@RequestBody @Valid UpdateApplicationUserRequestDTO request,@PathVariable String id) {
 		return applicationUserService.updateUser(request, id);

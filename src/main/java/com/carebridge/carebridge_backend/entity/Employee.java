@@ -16,20 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Table(name = "employee_table")
 public class Employee extends BaseEntity {
-	
-//	Columns:
-//		employee_id varchar(20) PK 
-//		employee_number varchar(20) 
-//		employee_name varchar(150) 
-//		employee_email varchar(150) 
-//		employee_phone_number varchar(15) 
-//		basic_salary decimal(10,2) 
-//		is_active tinyint(1) 
-//		created_by varchar(50) 
-//		created_on timestamp 
-//		modified_by varchar(50) 
-//		modified_on timestamp
-//	
+
 	@Id
 	@Column(name = "employee_id" , nullable = false)
 	private String employeeId;
