@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.carebridge.carebridge_backend.security.CustomAccessDeniedHandler;
 import com.carebridge.carebridge_backend.security.CustomAuthenticationEntryPoint;
 import com.carebridge.carebridge_backend.security.jwt.JwtAuthenticationFilter;
 
@@ -20,22 +21,15 @@ import com.carebridge.carebridge_backend.security.jwt.JwtAuthenticationFilter;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-//	@Bean
-//	public SecurityFilterChain securityFilterChati(HttpSecurity http) throws Exception {
-//
-//		http.csrf(AbstractHttpConfigurer::disable)
-//				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//				.authorizeHttpRequests(auth -> auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**",
-//						"/authentication/**", "/applicationUser/**").permitAll().anyRequest().authenticated());
-//		return http.build();
-//	}
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter,
-			CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
+			CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
+			CustomAccessDeniedHandler customAccessDeniedHandler) throws Exception {
 
 		http.csrf(AbstractHttpConfigurer::disable)
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.exceptionHandling(exception -> exception.authenticationEntryPoint(customAuthenticationEntryPoint))
+				.exceptionHandling(exception -> exception.authenticationEntryPoint(customAuthenticationEntryPoint)
+						.accessDeniedHandler(customAccessDeniedHandler))
 				.authorizeHttpRequests(
 						auth -> auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/authentication/login")
 								.permitAll().anyRequest().authenticated())

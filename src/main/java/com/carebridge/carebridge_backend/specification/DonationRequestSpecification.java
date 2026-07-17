@@ -1,14 +1,9 @@
 package com.carebridge.carebridge_backend.specification;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
 import org.springframework.data.jpa.domain.Specification;
 
-import com.carebridge.carebridge_backend.entity.ApplicationUser;
 import com.carebridge.carebridge_backend.entity.DonationRequest;
-import com.carebridge.carebridge_backend.enums.DonationStatus;
-import com.carebridge.carebridge_backend.enums.DonationType;
+import com.carebridge.carebridge_backend.entity.Employee;
 
 //private String donationRequestId;
 //
@@ -60,5 +55,10 @@ public class DonationRequestSpecification {
 
 		return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("isActive"), isActive);
 
+	}
+
+	public static Specification<DonationRequest> employee(Employee employee) {
+
+		return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("employee"), employee);
 	}
 }

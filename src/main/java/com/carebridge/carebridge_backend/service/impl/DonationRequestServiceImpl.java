@@ -50,6 +50,7 @@ public class DonationRequestServiceImpl implements DonationRequestService {
 		this.loggedInUserService = loggedInUserService;
 	}
 
+	@Override
 	public DonationRequestResponseDTO addDonationRequest(DonationRequestDTO request) {
 
 		DonationRequest donationRequest = donationRequestMapper.toEntity(request);
@@ -81,33 +82,65 @@ public class DonationRequestServiceImpl implements DonationRequestService {
 		return donationRequestMapper.toResponseDTO(donationRequest);
 	}
 
+	@Override
 	public DonationRequestResponseDTO getDonationRequestById(String donationRequestId) {
-		DonationRequest donationRequest = donationRequestRepository.findById(donationRequestId).orElseThrow(
-				() -> new ResourceNotFoundException("Donation Request Not found for Id : " + donationRequestId));
+
+		DonationRequest donationRequest;
+
+		if (loggedInUserService.isAdmin()) {
+
+			donationRequest = donationRequestRepository.findById(donationRequestId).orElseThrow(
+					() -> new ResourceNotFoundException("Donation Request Not found for Id : " + donationRequestId));
+
+		} else {
+			donationRequest = donationRequestRepository
+					.findByDonationRequestIdAndEmployeeEmployeeId(donationRequestId,
+							loggedInUserService.getCurrentEmployee().getEmployeeId())
+					.orElseThrow(() -> new ResourceNotFoundException(
+							"Donation Request Not found for Id : " + donationRequestId));
+
+		}
+		
 
 		return donationRequestMapper.toResponseDTO(donationRequest);
 	}
 
+	@Override
 	public Page<DonationRequestResponseDTO> getAllDonationRequests(boolean isActive, int page, int size) {
 		Specification<DonationRequest> specification = Specification
 				.where(DonationRequestSpecification.isActive(isActive));
 
+		if (!loggedInUserService.isAdmin()) {
+
+			specification = specification
+					.and(DonationRequestSpecification.employee(loggedInUserService.getCurrentEmployee()));
+		}
+
 		Page<DonationRequest> donationRequests = donationRequestRepository.findAll(specification,
 				PageRequest.of(page, size));
+
 		return donationRequests.map(donationRequestMapper::toResponseDTO);
 	}
 
+	@Override
 	public Page<DonationRequestResponseDTO> searchDonationRequests(String search, boolean isActive, int page,
 			int size) {
 
 		Specification<DonationRequest> specification = Specification.where(DonationRequestSpecification.search(search))
 				.and(DonationRequestSpecification.isActive(isActive));
 
+		if (!loggedInUserService.isAdmin()) {
+
+			specification = specification
+					.and(DonationRequestSpecification.employee(loggedInUserService.getCurrentEmployee()));
+		}
+
 		Page<DonationRequest> donationRequests = donationRequestRepository.findAll(specification,
 				PageRequest.of(page, size));
 		return donationRequests.map(donationRequestMapper::toResponseDTO);
 	}
 
+	@Override
 	public DonationRequestResponseDTO cancelDonationRequest(String donationRequestId) {
 
 		DonationRequest donationRequest = donationRequestRepository.findById(donationRequestId).orElseThrow(

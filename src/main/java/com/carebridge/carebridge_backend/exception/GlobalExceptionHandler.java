@@ -9,15 +9,26 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+
 import jakarta.servlet.http.HttpServletRequest;
-import tools.jackson.databind.exc.InvalidFormatException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+	@ExceptionHandler(AuthorizationDeniedException.class)
+	public ResponseEntity<ErrorResponse> handleAuthorizationDeniedException(AuthorizationDeniedException exception,
+			HttpServletRequest request) {
+
+		ErrorResponse errorResponse = createErrorResponse(HttpStatus.FORBIDDEN, exception.getMessage(), request);
+
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+	}
 
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException exception,
@@ -26,7 +37,6 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
 				.body(createErrorResponse(HttpStatus.NOT_FOUND, exception.getMessage(), request));
 	}
-	
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException exception,
@@ -50,32 +60,23 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body(createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred.", request));
 	}
-	
+
 	@ExceptionHandler(ResourceAlreadyExistsException.class)
-	public ResponseEntity<ErrorResponse> handleResourceAlreadyExistsException(
-	        ResourceAlreadyExistsException exception,
-	        HttpServletRequest request) {
+	public ResponseEntity<ErrorResponse> handleResourceAlreadyExistsException(ResourceAlreadyExistsException exception,
+			HttpServletRequest request) {
 
-	    ErrorResponse errorResponse = createErrorResponse(
-	            HttpStatus.CONFLICT,
-	            exception.getMessage(),
-	            request);
+		ErrorResponse errorResponse = createErrorResponse(HttpStatus.CONFLICT, exception.getMessage(), request);
 
-	    return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+		return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
 	}
-	
-	
+
 	@ExceptionHandler(BusinessValidationException.class)
-	public ResponseEntity<ErrorResponse> handleBusinessValidationException(
-			BusinessValidationException exception,
-	        HttpServletRequest request) {
+	public ResponseEntity<ErrorResponse> handleBusinessValidationException(BusinessValidationException exception,
+			HttpServletRequest request) {
 
-	    ErrorResponse errorResponse = createErrorResponse(
-	            HttpStatus.BAD_REQUEST,
-	            exception.getMessage(),
-	            request);
+		ErrorResponse errorResponse = createErrorResponse(HttpStatus.BAD_REQUEST, exception.getMessage(), request);
 
-	    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
 
 	private ErrorResponse createErrorResponse(HttpStatus status, String message, HttpServletRequest request) {
@@ -90,40 +91,31 @@ public class GlobalExceptionHandler {
 
 		return errorResponse;
 	}
-	
 
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
-	        HttpMessageNotReadableException exception,
-	        HttpServletRequest request) {
+			HttpMessageNotReadableException exception, HttpServletRequest request) {
 
-	    String message = "Invalid request payload.";
+		String message = "Invalid request payload.";
 
-	    if (exception.getCause() instanceof InvalidFormatException invalidFormatException) {
+		if (exception.getCause() instanceof InvalidFormatException invalidFormatException) {
 
-	        Class<?> targetType = invalidFormatException.getTargetType();
+			Class<?> targetType = invalidFormatException.getTargetType();
 
-	        if (targetType.isEnum()) {
+			if (targetType.isEnum()) {
 
-	            String invalidValue = String.valueOf(invalidFormatException.getValue());
+				String invalidValue = String.valueOf(invalidFormatException.getValue());
 
-	            String allowedValues = Arrays.stream(targetType.getEnumConstants())
-	                    .map(Object::toString)
-	                    .collect(Collectors.joining(", "));
+				String allowedValues = Arrays.stream(targetType.getEnumConstants()).map(Object::toString)
+						.collect(Collectors.joining(", "));
 
-	            message = String.format(
-	                    "Invalid value '%s'. Allowed values are: %s.",
-	                    invalidValue,
-	                    allowedValues);
-	        }
-	    }
+				message = String.format("Invalid value '%s'. Allowed values are: %s.", invalidValue, allowedValues);
+			}
+		}
 
-	    ErrorResponse errorResponse = createErrorResponse(
-	            HttpStatus.BAD_REQUEST,
-	            message,
-	            request);
+		ErrorResponse errorResponse = createErrorResponse(HttpStatus.BAD_REQUEST, message, request);
 
-	    return ResponseEntity.badRequest().body(errorResponse);
+		return ResponseEntity.badRequest().body(errorResponse);
 	}
 
 }
