@@ -1,7 +1,10 @@
 package com.carebridge.carebridge_backend.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
@@ -16,8 +19,9 @@ public interface DonationTransactionRepository
 
 	Page<DonationTransaction> findByDonationRequestDonationRequestId(String donationRequestId, Pageable pageable);
 	
-	Page<DonationTransaction> findByPayrollRunPayrollRunId(String payrollRunId, Pageable pageable);
+	Page<DonationTransaction> findByPayrollRunPayrollRunId( String payrollRunId, Pageable pageable);
 
 	boolean existsByDonationRequestDonationRequestIdAndPayrollPeriod(String donationRequestId, String payrollPeriod);
 
+	Optional<DonationTransaction> findByDonationTransactionIdAndDonationRequestEmployeeEmployeeId(String donationTransactionId, String employeeId);
 }

@@ -3,7 +3,9 @@ package com.carebridge.carebridge_backend.specification;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import com.carebridge.carebridge_backend.entity.DonationRequest;
 import com.carebridge.carebridge_backend.entity.DonationTransaction;
+import com.carebridge.carebridge_backend.entity.Employee;
 
 
 
@@ -43,5 +45,18 @@ public class DonationTransactionSpecification {
 
 		return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("isActive"), isActive);
 
+	}
+	
+	public static Specification<DonationTransaction> employee(Employee employee) {
+
+		return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("donationRequest").get("employee"), employee);
+	}
+	
+	public static Specification<DonationTransaction> payrollRun(String payrollRunId) {
+
+	    return (root, query, criteriaBuilder) ->
+	            criteriaBuilder.equal(
+	                    root.get("payrollRun").get("payrollRunId"),
+	                    payrollRunId);
 	}
 }

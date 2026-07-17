@@ -41,7 +41,7 @@ public class DonationTransactionController {
 	@GetMapping("/search")
 	public Page<DonationTransactionResponseDTO> SearchDonationTransactions(@RequestParam(required = false) String search,@RequestParam (defaultValue = "0")  int page,@RequestParam (defaultValue = "5")  int size,
 			@RequestParam(defaultValue = "true")boolean isActive){
-		return donationTransactionService.SearchDonationTransactions(search, page, size, isActive);
+		return donationTransactionService.searchDonationTransactions(search, page, size, isActive);
 		
 	}
 	

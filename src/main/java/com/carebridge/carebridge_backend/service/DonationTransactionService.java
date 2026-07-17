@@ -10,7 +10,7 @@ public interface DonationTransactionService {
 	
 	public Page<DonationTransactionResponseDTO> getAllDonationTransactions(int page, int size, String sortOrder);
 	
-	public Page<DonationTransactionResponseDTO> SearchDonationTransactions(String search, int page, int size, boolean isActive);
+	public Page<DonationTransactionResponseDTO> searchDonationTransactions(String search, int page, int size, boolean isActive);
 	
 	public Page<DonationTransactionResponseDTO> getTransactionsByDonationRequest(String donationRequestId, int page, int size);
 	
