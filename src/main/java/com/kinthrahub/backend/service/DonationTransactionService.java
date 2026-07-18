@@ -1,0 +1,19 @@
+package com.kinthrahub.backend.service;
+
+import org.springframework.data.domain.Page;
+
+import com.kinthrahub.backend.dto.response.DonationTransactionResponseDTO;
+
+public interface DonationTransactionService {
+	
+	public DonationTransactionResponseDTO getTransactionById(String donationTransactionId);
+	
+	public Page<DonationTransactionResponseDTO> getAllDonationTransactions(int page, int size, String sortOrder);
+	
+	public Page<DonationTransactionResponseDTO> searchDonationTransactions(String search, int page, int size, boolean isActive);
+	
+	public Page<DonationTransactionResponseDTO> getTransactionsByDonationRequest(String donationRequestId, int page, int size);
+	
+	public Page<DonationTransactionResponseDTO> getTransactionsByPayrollRunId(String payrollRunId, int page, int size);
+	
+}

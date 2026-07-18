@@ -8,8 +8,8 @@
 		<version>4.1.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.carebridge</groupId>
-	<artifactId>carebridge-backend</artifactId>
+	<groupId>com.kinthrahub</groupId>
+	<artifactId>kinthrahub-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name/>
 	<description/>
