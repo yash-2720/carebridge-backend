@@ -56,7 +56,7 @@ public class ApplicationUserController {
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
-	@GetMapping("/getAllAplicationUsers")
+	@GetMapping("/getAllApplicationUsers")
 	public Page<ApplicationUserResponseDTO> getAllApplicationUsers(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "5") int size, @RequestParam(defaultValue = "asc") String sortOrder,
 			@RequestParam(defaultValue = "true") boolean isActive) {
