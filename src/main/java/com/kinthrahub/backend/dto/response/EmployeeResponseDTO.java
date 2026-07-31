@@ -14,4 +14,5 @@ public class EmployeeResponseDTO {
     private String employeePhoneNumber;
     private BigDecimal basicSalary;
     private boolean isActive;
+    private boolean applicationUserCreated;
 }

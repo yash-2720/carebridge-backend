@@ -15,4 +15,5 @@ public class ApplicationUserResponseDTO {
 	private String username;
 	private LocalDateTime lastLogin;
 	private boolean isActive;
+	
 }

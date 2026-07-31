@@ -1,5 +1,9 @@
 package com.kinthrahub.backend.service.impl;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -13,6 +17,7 @@ import com.kinthrahub.backend.entity.Employee;
 import com.kinthrahub.backend.exception.BusinessValidationException;
 import com.kinthrahub.backend.exception.ResourceNotFoundException;
 import com.kinthrahub.backend.mapper.EmployeeMapper;
+import com.kinthrahub.backend.repository.ApplicationUserRepository;
 import com.kinthrahub.backend.repository.EmployeeRepository;
 import com.kinthrahub.backend.sequence.SequenceGenerator;
 import com.kinthrahub.backend.service.EmployeeService;
@@ -24,12 +29,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 	private EmployeeRepository employeeRepository;
 	private EmployeeMapper employeeMapper;
 	private SequenceGenerator sequenceGenerator;
+	private ApplicationUserRepository applicationUserRepository;
 
 	public EmployeeServiceImpl(EmployeeRepository employeeRepository, EmployeeMapper employeeMapper,
-			SequenceGenerator sequenceGenerator) {
+			SequenceGenerator sequenceGenerator, ApplicationUserRepository applicationUserRepository) {
 		this.employeeRepository = employeeRepository;
 		this.employeeMapper = employeeMapper;
 		this.sequenceGenerator = sequenceGenerator;
+		this.applicationUserRepository = applicationUserRepository;
 	}
 
 	@Override
@@ -55,11 +62,24 @@ public class EmployeeServiceImpl implements EmployeeService {
 		return employeeMapper.toResponseDTO(employee);
 	}
 
+//	@Override
+//	public EmployeeResponseDTO getEmployeeById(String id) {
+//		Employee employee = employeeRepository.findById(id)
+//				.orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " + id));
+//		return employeeMapper.toResponseDTO(employee);
+//	}
 	@Override
 	public EmployeeResponseDTO getEmployeeById(String id) {
+
 		Employee employee = employeeRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " + id));
-		return employeeMapper.toResponseDTO(employee);
+
+		EmployeeResponseDTO response = employeeMapper.toResponseDTO(employee);
+
+		response.setApplicationUserCreated(
+				applicationUserRepository.existsByEmployeeEmployeeId(employee.getEmployeeId()));
+
+		return response;
 	}
 
 	@Override
@@ -73,7 +93,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 		}
 
 		Page<Employee> employees = employeeRepository.findAll(specification, PageRequest.of(page, size, sort));
-		return employees.map(employeeMapper::toResponseDTO);
+
+		return mapEmployeesWithApplicationUserStatus(employees);
+
+//		    Page<Employee> employees =
+//		            employeeRepository.findAll(specification,
+//		                    PageRequest.of(page, size, sort));
+//
+//		    return employees.map(employeeMapper::toResponseDTO);
 
 	}
 
@@ -101,7 +128,26 @@ public class EmployeeServiceImpl implements EmployeeService {
 		Specification<Employee> specification = Specification.where(EmployeeSpecification.search(search))
 				.and(EmployeeSpecification.isActive(isActive));
 		Page<Employee> employees = employeeRepository.findAll(specification, PageRequest.of(page, size));
-		return employees.map(employeeMapper::toResponseDTO);
+//		return employees.map(employeeMapper::toResponseDTO);
+		return mapEmployeesWithApplicationUserStatus(employees);
+	}
+
+	private Page<EmployeeResponseDTO> mapEmployeesWithApplicationUserStatus(Page<Employee> employees) {
+		if (employees.isEmpty()) {
+		    return employees.map(employeeMapper::toResponseDTO);
+		}
+		List<String> employeeIds = employees.getContent().stream().map(Employee::getEmployeeId).toList();
+
+		Set<String> existingEmployeeIds = new HashSet<>(applicationUserRepository.findExistingEmployeeIds(employeeIds));
+
+		return employees.map(employee -> {
+
+			EmployeeResponseDTO response = employeeMapper.toResponseDTO(employee);
+
+			response.setApplicationUserCreated(existingEmployeeIds.contains(employee.getEmployeeId()));
+
+			return response;
+		});
 	}
 
 }
