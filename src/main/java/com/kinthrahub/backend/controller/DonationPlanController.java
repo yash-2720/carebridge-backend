@@ -27,14 +27,15 @@ public class DonationPlanController {
 		return donationPlanService.getDonationPlanById(id);
 	}
 
-	@GetMapping("/getAllDonatonPlan")
-	public Page<DonationPlanResponseDTO> getAllDonatinPlans(@RequestParam(defaultValue = "0") int page,
+	@GetMapping("/getAllDonationPlans")
+	public Page<DonationPlanResponseDTO> getAllDonationPlans(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "5") int size, @RequestParam(defaultValue = "true") boolean isActive,
 			@RequestParam(defaultValue = "asc") String sortOrder) {
 
 		return donationPlanService.getAllDonationPlan(page, size, isActive, sortOrder);
 
 	}
+	
 
 	@GetMapping("/search")
 	public Page<DonationPlanResponseDTO> search(@RequestParam(required = false) String search,
@@ -48,5 +49,11 @@ public class DonationPlanController {
 	public List<DonationPlanResponseDTO> getDonationPlansByHospital(@PathVariable String id,
 			@RequestParam(defaultValue = "true") boolean isActive) {
 		return donationPlanService.getDonationPlansByHospital(id, isActive);
+	}
+	
+	@GetMapping("/getDonationPlanById/{id}")
+	public DonationPlanResponseDTO getDonationPlansById(@PathVariable String id,
+			@RequestParam(defaultValue = "true") boolean isActive) {
+		return donationPlanService.getDonationPlanById(id);
 	}
 }
