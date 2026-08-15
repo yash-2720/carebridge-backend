@@ -1,11 +1,10 @@
 package com.kinthrahub.backend.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 
 import com.kinthrahub.backend.dto.request.EmployeeRequestDTO;
 import com.kinthrahub.backend.dto.request.UpdateEmployeeRequestDTO;
+import com.kinthrahub.backend.dto.response.CurrentEmployeeResponseDTO;
 import com.kinthrahub.backend.dto.response.EmployeeResponseDTO;
 
 
@@ -22,4 +21,6 @@ public interface EmployeeService {
 	public EmployeeResponseDTO updateEmployee(String id, UpdateEmployeeRequestDTO request);
 	
 	public Page<EmployeeResponseDTO> searchEmployee(String search, boolean isActive, int page, int size);
+	
+	public CurrentEmployeeResponseDTO getCurrentEmployee();
 }

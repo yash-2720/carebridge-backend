@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.kinthrahub.backend.dto.request.EmployeeRequestDTO;
 import com.kinthrahub.backend.dto.request.UpdateEmployeeRequestDTO;
+import com.kinthrahub.backend.dto.response.CurrentEmployeeResponseDTO;
 import com.kinthrahub.backend.dto.response.EmployeeResponseDTO;
 import com.kinthrahub.backend.entity.Employee;
 
@@ -33,6 +34,14 @@ public class EmployeeMapper {
 		response.setBasicSalary(employee.getBasicSalary());
 		response.setActive(employee.isActive());
 
+		return response;
+	}
+	
+	public CurrentEmployeeResponseDTO toCurrentEmployeeResponseDTO(Employee employee) {
+		CurrentEmployeeResponseDTO response = new CurrentEmployeeResponseDTO();
+		response.setEmployeeId(employee.getEmployeeId());
+		response.setBasicSalary(employee.getBasicSalary());
+		
 		return response;
 	}
 

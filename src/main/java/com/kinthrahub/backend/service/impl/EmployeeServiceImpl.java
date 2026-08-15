@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.kinthrahub.backend.dto.request.EmployeeRequestDTO;
 import com.kinthrahub.backend.dto.request.UpdateEmployeeRequestDTO;
+import com.kinthrahub.backend.dto.response.CurrentEmployeeResponseDTO;
 import com.kinthrahub.backend.dto.response.EmployeeResponseDTO;
 import com.kinthrahub.backend.entity.Employee;
 import com.kinthrahub.backend.exception.BusinessValidationException;
@@ -19,6 +20,7 @@ import com.kinthrahub.backend.exception.ResourceNotFoundException;
 import com.kinthrahub.backend.mapper.EmployeeMapper;
 import com.kinthrahub.backend.repository.ApplicationUserRepository;
 import com.kinthrahub.backend.repository.EmployeeRepository;
+import com.kinthrahub.backend.security.LoggedInUserService;
 import com.kinthrahub.backend.sequence.SequenceGenerator;
 import com.kinthrahub.backend.service.EmployeeService;
 import com.kinthrahub.backend.specification.EmployeeSpecification;
@@ -30,13 +32,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 	private EmployeeMapper employeeMapper;
 	private SequenceGenerator sequenceGenerator;
 	private ApplicationUserRepository applicationUserRepository;
+	private LoggedInUserService loggedInUserService;
 
 	public EmployeeServiceImpl(EmployeeRepository employeeRepository, EmployeeMapper employeeMapper,
-			SequenceGenerator sequenceGenerator, ApplicationUserRepository applicationUserRepository) {
+			SequenceGenerator sequenceGenerator, ApplicationUserRepository applicationUserRepository, LoggedInUserService loggedInUserService) {
 		this.employeeRepository = employeeRepository;
 		this.employeeMapper = employeeMapper;
 		this.sequenceGenerator = sequenceGenerator;
 		this.applicationUserRepository = applicationUserRepository;
+		this.loggedInUserService = loggedInUserService;
 	}
 
 	@Override
@@ -80,6 +84,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 				applicationUserRepository.existsByEmployeeEmployeeId(employee.getEmployeeId()));
 
 		return response;
+	}
+
+	public CurrentEmployeeResponseDTO getCurrentEmployee() {
+		
+		Employee employee = loggedInUserService.getCurrentEmployee();
+		CurrentEmployeeResponseDTO response = employeeMapper.toCurrentEmployeeResponseDTO(employee);
+		return response;
+
 	}
 
 	@Override
@@ -134,7 +146,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	private Page<EmployeeResponseDTO> mapEmployeesWithApplicationUserStatus(Page<Employee> employees) {
 		if (employees.isEmpty()) {
-		    return employees.map(employeeMapper::toResponseDTO);
+			return employees.map(employeeMapper::toResponseDTO);
 		}
 		List<String> employeeIds = employees.getContent().stream().map(Employee::getEmployeeId).toList();
 

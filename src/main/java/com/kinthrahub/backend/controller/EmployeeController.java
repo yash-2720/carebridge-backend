@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kinthrahub.backend.dto.request.EmployeeRequestDTO;
 import com.kinthrahub.backend.dto.request.UpdateEmployeeRequestDTO;
+import com.kinthrahub.backend.dto.response.CurrentEmployeeResponseDTO;
 import com.kinthrahub.backend.dto.response.EmployeeResponseDTO;
 import com.kinthrahub.backend.service.EmployeeService;
 
@@ -40,6 +41,11 @@ public class EmployeeController {
 	@GetMapping("/getById/{id}")
 	public EmployeeResponseDTO getEmployeeById(@PathVariable String id) {
 		return employeeService.getEmployeeById(id);
+	}
+	
+	@GetMapping("/getCurrentEmployee")
+	public CurrentEmployeeResponseDTO getCurrentEmployee() {
+		return employeeService.getCurrentEmployee();
 	}
 
 	@GetMapping("/getAllEmployees")
