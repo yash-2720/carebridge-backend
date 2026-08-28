@@ -31,7 +31,11 @@ public class JwtService {
 	public String generateToken(UserDetails userDetails) {
 
 		Date now = new Date();
-		return Jwts.builder().subject(userDetails.getUsername()).issuedAt(now)
+
+		String role = userDetails.getAuthorities().stream().findFirst().map(authority -> authority.getAuthority())
+				.orElseThrow(() -> new IllegalStateException("User role not found"));
+
+		return Jwts.builder().subject(userDetails.getUsername()).claim("role", role).issuedAt(now)
 				.expiration(new Date(now.getTime() + jwtExpiration)).signWith(getSigningKey()).compact();
 	}
 
@@ -49,6 +53,10 @@ public class JwtService {
 
 	public String extractUsername(String token) {
 		return extractClaim(token, Claims::getSubject);
+	}
+	
+	public String extractRole(String token) {
+	    return extractClaim(token, claims -> claims.get("role", String.class));
 	}
 
 	public Date extractExpiration(String token) {
