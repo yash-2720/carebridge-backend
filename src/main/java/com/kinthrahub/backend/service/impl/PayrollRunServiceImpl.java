@@ -175,9 +175,11 @@ public class PayrollRunServiceImpl implements PayrollRunService {
 		}
 		payrollRun.setRunStatus(PayrollRunStatus.COMPLETED);
 		payrollRun.setProcessedOn(LocalDateTime.now());
-		payrollRun = payrollRunRepository.save(payrollRun);
+//		payrollRun = payrollRunRepository.save(payrollRun);
 		payrollRun.setRemarks(
 				"Payroll processed successfully. Processed: " + processedRequests + ", Skipped: " + skippedRequests);
+
+		payrollRun = payrollRunRepository.save(payrollRun);
 
 		PayrollRunResponseDTO response = new PayrollRunResponseDTO();
 		response.setPayrollRunId(payrollRun.getPayrollRunId());

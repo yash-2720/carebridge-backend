@@ -159,7 +159,7 @@ public class DonationRequestServiceImpl implements DonationRequestService {
 		}
 
 		donationRequest.setDonationStatus(DonationStatus.CANCELLED);
-		donationRequest.setActive(false);
+//		donationRequest.setActive(false);
 		donationRequestRepository.save(donationRequest);
 		return donationRequestMapper.toResponseDTO(donationRequest);
 
