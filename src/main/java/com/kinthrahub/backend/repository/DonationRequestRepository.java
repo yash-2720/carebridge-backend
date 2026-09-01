@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.kinthrahub.backend.entity.DonationRequest;
@@ -20,10 +22,29 @@ public interface DonationRequestRepository
 	boolean existsByEmployeeEmployeeId(String employeeId);
 
 	List<DonationRequest> findByDonationStatusAndIsActive(DonationStatus donationStatus, boolean isActive);
-	
+
 	Page<DonationRequest> findByEmployee(Employee employee, Pageable pageable);
-	
+
 	DonationRequest findByEmployee(Employee employee);
+
+	Optional<DonationRequest> findByDonationRequestIdAndEmployeeEmployeeId(String donationRequestId, String employeeId);
+
+	@Query("""
+			    SELECT
+			        COUNT(d) AS activeDonations,
+			        SUM(d.donationAmount) AS totalDonationAmount
+			    FROM DonationRequest d
+			    WHERE d.employee = :employee
+			    AND d.isActive = true
+			""")
+	MyDonationSummaryProjection getMyDonationSummary(@Param("employee") Employee employee);
 	
-	Optional<DonationRequest> findByDonationRequestIdAndEmployeeEmployeeId(String donationRequestId, String employeeId );
+	@Query("""
+		    SELECT
+		        COUNT(d) AS activeDonations,
+		        SUM(d.donationAmount) AS totalDonationAmount
+		    FROM DonationRequest d
+		    WHERE d.isActive = true
+		""")
+	MyDonationSummaryProjection getDonationRequestSummary();
 }
