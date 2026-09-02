@@ -52,7 +52,7 @@ public class PayrollRunServiceImpl implements PayrollRunService {
 	@Override
 	public Page<PayrollRunResponseDTO> getAllPayrollRecords(int page, int size) {
 		Page<PayrollRun> payrolls = payrollRunRepository.findAll(PageRequest.of(page, size));
-		return payrolls.map(this :: toResponseDTO);
+		return payrolls.map(this::toResponseDTO);
 	}
 
 	@Override
@@ -70,11 +70,18 @@ public class PayrollRunServiceImpl implements PayrollRunService {
 
 		Specification<PayrollRun> specification = Specification.where(PayrollRunSpecification.search(search));
 
-		Page<PayrollRun> payrolls = payrollRunRepository.findAll(specification,PageRequest.of(page, size));
-		return payrolls.map(this :: toResponseDTO);
+		Page<PayrollRun> payrolls = payrollRunRepository.findAll(specification, PageRequest.of(page, size));
+		return payrolls.map(this::toResponseDTO);
 
 	}
-	
+
+	@Override
+	public PayrollRunResponseDTO getLatestPayroll() {
+		PayrollRun payrollRun = payrollRunRepository.findFirstByOrderByPayrollYearDescPayrollMonthDesc()
+				.orElseThrow(() -> new ResourceNotFoundException(""));
+		return toResponseDTO(payrollRun);
+	}
+
 	@Transactional
 	public PayrollRunResponseDTO runPayroll(PayrollRunRequestDTO request) {
 
@@ -199,21 +206,19 @@ public class PayrollRunServiceImpl implements PayrollRunService {
 
 		return response;
 	}
-	
-	
+
 	private PayrollRunResponseDTO toResponseDTO(PayrollRun payrollRun) {
 
-	    PayrollRunResponseDTO response = new PayrollRunResponseDTO();
+		PayrollRunResponseDTO response = new PayrollRunResponseDTO();
 
-	    response.setPayrollRunId(payrollRun.getPayrollRunId());
-	    response.setPayrollMonth(payrollRun.getPayrollMonth());
-	    response.setPayrollYear(payrollRun.getPayrollYear());
-	    response.setRunStatus(payrollRun.getRunStatus());
-	    response.setProcessedOn(payrollRun.getProcessedOn());
-	    response.setRemarks(payrollRun.getRemarks());
+		response.setPayrollRunId(payrollRun.getPayrollRunId());
+		response.setPayrollMonth(payrollRun.getPayrollMonth());
+		response.setPayrollYear(payrollRun.getPayrollYear());
+		response.setRunStatus(payrollRun.getRunStatus());
+		response.setProcessedOn(payrollRun.getProcessedOn());
+		response.setRemarks(payrollRun.getRemarks());
 
-	    return response;
+		return response;
 	}
-
 
 }

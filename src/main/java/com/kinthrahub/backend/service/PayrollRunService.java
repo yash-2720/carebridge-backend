@@ -14,4 +14,6 @@ public interface PayrollRunService {
     public PayrollRunResponseDTO getPayrollById(String payrollRunId);
     
     public Page<PayrollRunResponseDTO> searchPayrollRun(String search, int page, int size);
+    
+    PayrollRunResponseDTO getLatestPayroll();
 }

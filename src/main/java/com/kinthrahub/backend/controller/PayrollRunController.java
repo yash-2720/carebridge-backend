@@ -52,4 +52,9 @@ public class PayrollRunController {
     public Page<PayrollRunResponseDTO> SearchPayrollRun(@RequestParam(required = false) String search,@RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "5") int size){
     	return payrollRunService.searchPayrollRun(search, page, size);
     }
+	
+	@GetMapping("/getLatestPayroll")
+	public PayrollRunResponseDTO getLatestPayroll() {
+		return payrollRunService.getLatestPayroll();
+	}
 }
